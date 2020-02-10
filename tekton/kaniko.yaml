@@ -1,0 +1,46 @@
+# https://github.com/tektoncd/catalog/blob/master/kaniko/kaniko.yaml
+# kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/kaniko/kaniko.yaml
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: kaniko
+spec:
+  inputs:
+    params:
+    - name: DOCKERFILE
+      description: Path to the Dockerfile to build.
+      default: ./Dockerfile
+    - name: CONTEXT
+      description: The build context used by Kaniko.
+      default: ./
+    - name: EXTRA_ARGS
+      default: ""
+    - name: BUILDER_IMAGE
+      description: The image on which builds will run
+      default: gcr.io/kaniko-project/executor:v0.13.0
+    resources:
+    - name: source
+      type: git
+
+  outputs:
+    resources:
+    - name: image
+      type: image
+
+  steps:
+  - name: build-and-push
+    workingdir: /workspace/source
+    image: $(inputs.params.BUILDER_IMAGE)
+    # specifying DOCKER_CONFIG is required to allow kaniko to detect docker credential
+    # https://github.com/tektoncd/pipeline/pull/706
+    env:
+    - name: DOCKER_CONFIG
+      value: /tekton/home/.docker
+    command:
+    - /kaniko/executor
+    - $(inputs.params.EXTRA_ARGS)
+    - --dockerfile=$(inputs.params.DOCKERFILE)
+    - --context=/workspace/source/$(inputs.params.CONTEXT)  # The user does not need to care the workspace and the source.
+    - --destination=$(outputs.resources.image.url)
+    securityContext:
+      runAsUser: 0

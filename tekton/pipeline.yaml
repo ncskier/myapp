@@ -1,0 +1,29 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: build-and-deploy-myapp
+spec:
+  resources:
+    - name: source
+      type: git
+    - name: image
+      type: image
+  tasks:
+    - name: build-myapp
+      taskRef:
+        name: kaniko
+      resources:
+        inputs:
+          - name: source
+            resource: source
+        outputs:
+          - name: image
+            resource: image
+    - name: deploy-myapp
+      runAfter: [build-myapp]
+      taskRef:
+        name: deploy-kubectl
+      resources:
+        inputs:
+          - name: source
+            resource: source
