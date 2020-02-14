@@ -5,11 +5,12 @@ metadata:
     app: myapp
   name: myapp
 spec:
+  # Use a different type if LoadBalancer is not supported on your k8s environment
   type: LoadBalancer
   ports:
     - name: http
-      port: 4000
-      targetPort: 8080
+      port: 3000
+      targetPort: 3000
       protocol: TCP
   selector:
     app: myapp

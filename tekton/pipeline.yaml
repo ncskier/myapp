@@ -1,26 +1,28 @@
 apiVersion: tekton.dev/v1alpha1
 kind: Pipeline
 metadata:
-  name: build-and-deploy-myapp
+  name: myapp
 spec:
+  params:
+    - name: BUILDER_IMAGE
+      description: The image on which builds will run
+      default: myapp:latest
   resources:
     - name: source
       type: git
-    - name: image
-      type: image
   tasks:
-    - name: build-myapp
+    - name: build
       taskRef:
-        name: kaniko
+        name: build-docker
+      params:
+        - name: BUILDER_IMAGE
+          value: $(params.BUILDER_IMAGE)
       resources:
         inputs:
           - name: source
             resource: source
-        outputs:
-          - name: image
-            resource: image
-    - name: deploy-myapp
-      runAfter: [build-myapp]
+    - name: deploy
+      runAfter: [build]
       taskRef:
         name: deploy-kubectl
       resources:

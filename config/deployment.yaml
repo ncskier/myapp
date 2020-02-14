@@ -16,7 +16,8 @@ spec:
     spec:
       containers:
         - name: myapp
-          image: localhost:5000/myapp:latest
+          image: myapp:latest
+          imagePullPolicy: Never
           ports:
-            - containerPort: 8080
+            - containerPort: 3000
               protocol: TCP

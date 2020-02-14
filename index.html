@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MyApp</title>
+  <link rel="shortcut icon" type="image/png" href="https://raw.githubusercontent.com/tektoncd/dashboard/master/src/images/favicon.png" />
+</head>
+<body>
+  <button id="getCatImageButton" class="center" type="button">Click Me! 🐱</button>
+  <div id="catImageContainer">
+    <img id="catImage" class="center" alt="A random image of a cat." />
+  </div>
+  <p class="footnote">Images are from <a href="https://thecatapi.com/" rel="noopener noreferrer" target="_blank">TheCatAPI</a>.</p>
+</body>
+
+<style>
+  .center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  #getCatImageButton {
+    margin-top: 1em;
+  }
+
+  #catImageContainer {
+    margin-top: 1em;
+  }
+
+  #catImage {
+    max-height: 500px;
+    max-width: 100%;
+    display: block;
+  }
+
+  .footnote {
+    position: absolute;
+    left: 1em;
+    bottom: 1em;
+    color: gray;
+  }
+</style>
+
+<script>
+  document.getElementById('getCatImageButton').addEventListener('click', requestCatImage);
+  requestCatImage();
+
+  function requestCatImage() {
+    httpRequest = new XMLHttpRequest();
+    httpRequest.onreadystatechange = function() {
+      // Process the server response here.
+      if (httpRequest.readyState === XMLHttpRequest.DONE) {
+        if (httpRequest.status === 200) {
+          var response = JSON.parse(httpRequest.responseText);
+          document.getElementById('catImage').src = response[0].url;
+        } else {
+          alert('There was a problem with the request')
+        }
+      }
+    };
+    // Make request
+    httpRequest.open('GET', 'https://api.thecatapi.com/v1/images/search', true);
+    httpRequest.send();
+  }
+</script>
+</html>

@@ -1,3 +1,5 @@
+# Dockerfile from here: https://nodejs.org/de/docs/guides/nodejs-docker-webapp/
+
 FROM node:10-alpine
 
 # Create app directory
@@ -17,5 +19,5 @@ RUN npm install
 # Bundle app source
 COPY . .
 
-EXPOSE 8080
+EXPOSE 3000
 CMD ["node", "app.js"]
