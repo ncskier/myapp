@@ -14,8 +14,9 @@ spec:
   steps:
   - name: apply-config
     image: lachlanevenson/k8s-kubectl
+    workingDir: /workspace/source
     command: ['kubectl']
     args:
     - apply
     - -f
-    - /workspace/source/$(inputs.params.K8S_DIRECTORY_PATH)
+    - $(inputs.params.K8S_DIRECTORY_PATH)

@@ -20,14 +20,15 @@ spec:
   steps:
     - name: docker
       image: docker
+      workingDir: /workspace/source
       command: ["docker"]
       args:
         - build
         - -f
-        - /workspace/source/$(inputs.params.DOCKERFILE)
+        - $(inputs.params.DOCKERFILE)
         - -t
         - $(inputs.params.BUILDER_IMAGE)
-        - /workspace/source/$(inputs.params.CONTEXT)
+        - $(inputs.params.CONTEXT)
       volumeMounts:
         - name: docker-socket
           mountPath: /var/run/docker.sock

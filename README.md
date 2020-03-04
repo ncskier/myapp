@@ -17,3 +17,7 @@ view the running app.
 ## Build and run Nodejs app on Kubernetes using a cloud native Tekton Pipeline
 
 Follow the instructions in the [tekton/](tekton/README.md) directory.
+
+### OpenShift
+
+If you are using an OpenShift environment, then follow the instructions in the [openshift/tekton/](openshift/tekton/README.md) directory.
