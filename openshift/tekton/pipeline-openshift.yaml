@@ -1,0 +1,39 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: myapp-openshift
+spec:
+  resources:
+    - name: source
+      type: git
+    - name: image
+      type: image
+  tasks:
+    - name: build
+      taskRef:
+        name: buildah
+      resources:
+        inputs:
+          - name: source
+            resource: source
+        outputs:
+          - name: image
+            resource: image
+      params:
+        - name: TLSVERIFY
+          value: 'false'
+    - name: deploy
+      runAfter: [build]
+      taskRef:
+        name: deploy-openshift
+      resources:
+        inputs:
+          - name: source
+            resource: source
+          - name: image
+            resource: image
+      params:
+        - name: K8S_DIRECTORY_PATH
+          value: openshift/config/
+        - name: DEPLOYMENT
+          value: myapp

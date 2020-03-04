@@ -1,0 +1,37 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: deploy-openshift
+spec:
+  inputs:
+    resources:
+    - name: source
+      type: git
+    - name: image
+      type: image
+    params:
+    - name: K8S_DIRECTORY_PATH
+      description: Path to the directory for kubectl apply -f
+      default: config/
+    - name: DEPLOYMENT
+      description: Name of the Deployment and the container name in the Deployment
+      default: myapp
+  steps:
+  - name: apply-config
+    image: quay.io/openshift/origin-cli:latest
+    workingDir: /workspace/source
+    command: ['/bin/bash', '-c']
+    args:
+    - |-
+      oc apply -f $(inputs.params.K8S_DIRECTORY_PATH)
+  - name: patch-deployment
+    image: quay.io/openshift/origin-cli:latest
+    command: ['/bin/bash', '-c']
+    args:
+    - |-
+      oc patch deployment $(inputs.params.DEPLOYMENT) --patch='{"spec":{"template":{"spec":{
+        "containers":[{
+          "name": "$(inputs.params.DEPLOYMENT)",
+          "image":"$(inputs.resources.image.url)"
+        }]
+      }}}}'
